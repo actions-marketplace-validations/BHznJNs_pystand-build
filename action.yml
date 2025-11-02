@@ -13,7 +13,7 @@ inputs:
   python-version:
     description: "The target Python embedded version to use."
     required: true
-    default: "3.11.9"
+    default: "3.13.9"
   pystand-entry-file:
     description: "The entry file path for PyStand."
     required: false
@@ -27,6 +27,10 @@ inputs:
       For directories, they will be copied to <build-directory>/<directory-name>;
       for files, they will be copied to <build-directory>/
     required: true
+  working-directory:
+    description: 'The working directory to run the action in.'
+    required: false
+    default: '.'
 
 outputs:
   build-directory:
@@ -51,6 +55,7 @@ runs:
 
     - name: Install Dependencies for PyStand Package
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         python -m venv venv
         source venv/Scripts/activate
@@ -102,6 +107,7 @@ runs:
     - name: Copy Sources and Assets to Build directory
       id: copy-sources
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: python "$GITHUB_ACTION_PATH/scripts/copy_files.py"
       env:
         BUILD_PATH: ${{ steps.init-build-directory.outputs.build-directory }}
